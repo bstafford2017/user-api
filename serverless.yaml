@@ -1,8 +1,11 @@
-service: sls
+service: user-api
 
 custom:
   settings:
-    POSTS_TABLE: posts
+    USERS_TABLE: Users
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules: false
 
 provider:
   name: aws
@@ -19,35 +22,38 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.POSTS_TABLE}'
+        - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.USERS_TABLE}'
+
+plugins:
+  - serverless-webpack
 
 functions:
   createUser:
-    handler: handler.createUser
+    handler: src/index.createUser
     events:
       - http:
           path: /users
           method: post
   getAllUsers:
-    handler: handler.getAllUsers
+    handler: src/index.getAllUsers
     events:
       - http:
           path: /users
           method: get
   getUser:
-    handler: handler.getUser
+    handler: src/index.getUser
     events:
       - http:
           path: /users/{number}
           method: get
   updateUser:
-    handler: handler.updateUser
+    handler: src/index.updateUser
     events:
       - http:
           path: /users/{id}
           method: put
   deleteUser:
-    handler: handler.deleteUser
+    handler: src/index.deleteUser
     events:
       - http:
           path: /users/{id}
@@ -67,4 +73,4 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:custom.settings.POSTS_TABLE}
+        TableName: ${self:custom.settings.USERS_TABLE}

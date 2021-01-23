@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk'
 import { hash } from 'bcrypt'
-import uuid from 'uuid/v4'
+import uuid from 'uuid'
 const db = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' })
 
 const usersTable = process.env.USERS_TABLE
@@ -9,7 +9,7 @@ const response = (statusCode, message) => {
   return {
     statusCode,
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(message)
   }
@@ -21,12 +21,13 @@ export const createUser = async (event) => {
   )
 
   if (!username || !password || !firstName || !lastName || !admin) {
-    return response(400, { error: 'Please specify all fields'})
+    return response(400, { error: 'Please specify all fields' })
   }
 
   const encryptedPassword = await hash(password, 20)
 
-  const user = { id: uuid(),
+  const user = {
+    id: uuid(),
     createdAt: new Date().toISOString(),
     username,
     password: encryptedPassword,
@@ -48,23 +49,27 @@ export const createUser = async (event) => {
   }
 }
 
-export const getAllUsers = () => {
+export const getAllUsers = async () => {
   try {
-    const data = await db.scan({
-      TableName: usersTable
-    }).promise()
+    const data = await db
+      .scan({
+        TableName: usersTable
+      })
+      .promise()
     return response(200, data)
   } catch (e) {
     return response(e.statusCode, e)
   }
 }
 
-export const getUser = (event) => {
+export const getUser = async (event) => {
   const { pathParameters = {} } = event
   const { id = '' } = pathParameters
 
-  if(!id) {
-    return response(400, { error: 'Please specify an id in the url parameters'})
+  if (!id) {
+    return response(400, {
+      error: 'Please specify an id in the url parameters'
+    })
   }
 
   const params = {
@@ -82,7 +87,7 @@ export const getUser = (event) => {
   }
 }
 
-export const updateUser = (event, context, callback) => {
+export const updateUser = async (event, context, callback) => {
   const { pathParameters = {} } = event
   const { id = '' } = pathParameters
   const { username, password, firstName, lastName, admin } = JSON.parse(
@@ -90,7 +95,7 @@ export const updateUser = (event, context, callback) => {
   )
 
   if (!username || !password || !firstName || !lastName || !admin) {
-    return response(400, { error: 'Please specify all fields'})
+    return response(400, { error: 'Please specify all fields' })
   }
 
   const encryptedPassword = await hash(password, 20)
@@ -101,33 +106,34 @@ export const updateUser = (event, context, callback) => {
     },
     TableName: usersTable,
     ConditionExpression: 'attribute_exists(id)',
-    UpdateExpression: 'SET username = :username, password = :password, firstName = :firstName, lastName = :lastName, admin = :admin',
+    UpdateExpression:
+      'SET username = :username, password = :password, firstName = :firstName, lastName = :lastName, admin = :admin',
     ExpressionAttributeValues: {
       ':username': username,
       ':password': encryptedPassword,
       ':firstName': firstName,
       ':lastName': lastName,
-      ':admin': admin,
+      ':admin': admin
     },
     ReturnValues: 'ALL_NEW'
   }
 
   try {
-    const data = await db
-      .update(params)
-      .promise()
+    const data = await db.update(params).promise()
     return response(200, data)
-  } catch(e) {
+  } catch (e) {
     return response(err.statusCode, err)
   }
 }
 
-export const deleteUser = (event, context, callback) => {
+export const deleteUser = async (event, context, callback) => {
   const { pathParameters = {} } = event
   const { id = '' } = pathParameters
 
-  if(!id) {
-    return response(400, { error: 'Please specify an id in the url parameters'})
+  if (!id) {
+    return response(400, {
+      error: 'Please specify an id in the url parameters'
+    })
   }
 
   const params = {
@@ -138,11 +144,9 @@ export const deleteUser = (event, context, callback) => {
   }
 
   try {
-    const data = await db
-      .delete(params)
-      .promise()
+    const data = await db.delete(params).promise()
     return response(200, data)
-  } catch(e) {
+  } catch (e) {
     return response(err.statusCode, err)
   }
 }
