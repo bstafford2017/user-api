@@ -22,6 +22,6 @@ module.exports = {
       }
     ]
   },
-  mode: 'development',
+  mode: 'production',
   target: 'node'
 }

@@ -16,9 +16,7 @@ const response = (statusCode, message) => {
 }
 
 export const createUser = async (event) => {
-  const { username, password, firstName, lastName, admin } = JSON.parse(
-    event.body
-  )
+  const { username, password, firstName, lastName, admin } = event
 
   if (!username || !password || !firstName || !lastName || !admin) {
     return response(400, { error: 'Please specify all fields' })
@@ -91,9 +89,7 @@ export const getUser = async (event) => {
 export const updateUser = async (event, context, callback) => {
   const { pathParameters = {} } = event
   const { id = '' } = pathParameters
-  const { username, password, firstName, lastName, admin } = JSON.parse(
-    event.body
-  )
+  const { username, password, firstName, lastName, admin } = event
 
   if (!username || !password || !firstName || !lastName || !admin) {
     return response(400, { error: 'Please specify all fields' })
