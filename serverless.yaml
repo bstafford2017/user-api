@@ -3,9 +3,6 @@ service: user-api
 custom:
   settings:
     USERS_TABLE: Users
-  webpack:
-    webpackConfig: 'webpack.config.js'
-    includeModules: false
 
 provider:
   name: aws
@@ -24,9 +21,6 @@ provider:
       Resource:
         - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.USERS_TABLE}'
 
-plugins:
-  - serverless-webpack
-
 functions:
   createUser:
     handler: src/index.createUser
@@ -35,7 +29,7 @@ functions:
           path: /users
           method: post
   getAllUsers:
-    handler: src/index.getAllUsers
+    handler: dist/index.bundle.getAllUsers
     events:
       - http:
           path: /users

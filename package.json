@@ -13,7 +13,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "webpack",
+    "local": "npm run build && serverless invoke local --function getAllUsers"
   },
   "author": "Benjamin Stafford",
   "license": "MIT"

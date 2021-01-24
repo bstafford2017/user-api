@@ -1,10 +1,10 @@
 const path = require('path')
 
 module.exports = {
-  entry: { handler: './src/index' },
+  entry: { handler: path.join(__dirname, 'src', 'index') },
   output: {
-    path: __dirname + './dist',
-    filename: 'index_bundle.js',
+    path: path.join(__dirname, 'dist'),
+    filename: 'index.bundle.js',
     library: '$',
     libraryTarget: 'umd'
   },
@@ -12,10 +12,16 @@ module.exports = {
     rules: [
       {
         test: /\.(js)$/,
-        exclude: /node_modules/,
-        use: 'babel-loader'
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/env']
+          }
+        }
       }
     ]
   },
-  mode: 'development'
+  mode: 'development',
+  target: 'node'
 }

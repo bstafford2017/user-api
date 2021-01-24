@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk'
-import { hash } from 'bcrypt'
-import uuid from 'uuid'
+// import { hash } from 'bcrypt'
+import { v4 as uuid } from 'uuid'
 const db = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' })
 
 const usersTable = process.env.USERS_TABLE
@@ -24,13 +24,14 @@ export const createUser = async (event) => {
     return response(400, { error: 'Please specify all fields' })
   }
 
-  const encryptedPassword = await hash(password, 20)
+  // const encryptedPassword = await hash(password, 20)
 
   const user = {
     id: uuid(),
     createdAt: new Date().toISOString(),
     username,
-    password: encryptedPassword,
+    // password: encryptedPassword,
+    password,
     firstName,
     lastName,
     admin
@@ -98,7 +99,7 @@ export const updateUser = async (event, context, callback) => {
     return response(400, { error: 'Please specify all fields' })
   }
 
-  const encryptedPassword = await hash(password, 20)
+  // const encryptedPassword = await hash(password, 20)
 
   const params = {
     Key: {
@@ -110,7 +111,8 @@ export const updateUser = async (event, context, callback) => {
       'SET username = :username, password = :password, firstName = :firstName, lastName = :lastName, admin = :admin',
     ExpressionAttributeValues: {
       ':username': username,
-      ':password': encryptedPassword,
+      // ':password': encryptedPassword,
+      ':password': password,
       ':firstName': firstName,
       ':lastName': lastName,
       ':admin': admin
