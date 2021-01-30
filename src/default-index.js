@@ -1,5 +1,3 @@
-import { ModuleFilenameHelpers } from 'webpack'
-
 const AWS = require('aws-sdk')
 // import { hash } from 'bcrypt'
 const { v4 } = require('uuid')
@@ -84,7 +82,7 @@ module.exports.getUser = async (event) => {
     const data = await db.get(params).promise()
     return response(200, data)
   } catch (e) {
-    return response(err.statusCode, err)
+    return response(e.statusCode, e)
   }
 }
 
@@ -122,7 +120,7 @@ module.exports.updateUser = async (event, context, callback) => {
     const data = await db.update(params).promise()
     return response(200, data)
   } catch (e) {
-    return response(err.statusCode, err)
+    return response(e.statusCode, e)
   }
 }
 
@@ -147,6 +145,6 @@ module.exports.deleteUser = async (event, context, callback) => {
     const data = await db.delete(params).promise()
     return response(200, data)
   } catch (e) {
-    return response(err.statusCode, err)
+    return response(e.statusCode, e)
   }
 }
