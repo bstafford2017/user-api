@@ -29,7 +29,7 @@ functions:
           path: /users
           method: post
   getAllUsers:
-    handler: dist/index.bundle.getAllUsers
+    handler: dist/index.getAllUsers
     events:
       - http:
           path: /users
