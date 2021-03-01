@@ -1,11 +1,28 @@
-import AWS from 'aws-sdk'
+import { DynamoDB } from 'aws-sdk'
 // import { hash } from 'bcrypt'
 import { v4 as uuid } from 'uuid'
-const db = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' })
 
-const usersTable = process.env.USERS_TABLE
+const db = new DynamoDB.DocumentClient()
 
-const response = (statusCode, message) => {
+const usersTable: string = process.env.USERS_TABLE || 'Users'
+
+interface Response {
+  statusCode: number
+  headers: any
+  body: string
+}
+
+interface User {
+  id: string
+  createdAt: string
+  username: string
+  password: string
+  firstName: string
+  lastName: string
+  admin: boolean
+}
+
+const response = (statusCode: number, message: any): Response => {
   return {
     statusCode,
     headers: {
@@ -15,7 +32,7 @@ const response = (statusCode, message) => {
   }
 }
 
-export const createUser = async (event) => {
+export const createUser = async (event: any) => {
   const { username, password, firstName, lastName, admin } = event
 
   if (!username || !password || !firstName || !lastName || !admin) {
@@ -24,7 +41,7 @@ export const createUser = async (event) => {
 
   // const encryptedPassword = await hash(password, 20)
 
-  const user = {
+  const user: User = {
     id: uuid(),
     createdAt: new Date().toISOString(),
     username,
@@ -61,7 +78,7 @@ export const getAllUsers = async () => {
   }
 }
 
-export const getUser = async (event) => {
+export const getUser = async (event: any) => {
   const { pathParameters = {} } = event
   const { id = '' } = pathParameters
 
@@ -82,11 +99,11 @@ export const getUser = async (event) => {
     const data = await db.get(params).promise()
     return response(200, data)
   } catch (e) {
-    return response(err.statusCode, err)
+    return response(e.statusCode, e)
   }
 }
 
-export const updateUser = async (event, context, callback) => {
+export const updateUser = async (event: any) => {
   const { pathParameters = {} } = event
   const { id = '' } = pathParameters
   const { username, password, firstName, lastName, admin } = event
@@ -120,11 +137,11 @@ export const updateUser = async (event, context, callback) => {
     const data = await db.update(params).promise()
     return response(200, data)
   } catch (e) {
-    return response(err.statusCode, err)
+    return response(e.statusCode, e)
   }
 }
 
-export const deleteUser = async (event, context, callback) => {
+export const deleteUser = async (event: any) => {
   const { pathParameters = {} } = event
   const { id = '' } = pathParameters
 
@@ -145,6 +162,6 @@ export const deleteUser = async (event, context, callback) => {
     const data = await db.delete(params).promise()
     return response(200, data)
   } catch (e) {
-    return response(err.statusCode, err)
+    return response(e.statusCode, e)
   }
 }

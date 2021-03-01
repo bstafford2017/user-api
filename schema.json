@@ -1,9 +1,0 @@
-{
-  "id": "test",
-  "username": "test",
-  "password": "test",
-  "firstName": "test",
-  "lastName": "test",
-  "admin": false,
-  "createdAt": "test"
-}
